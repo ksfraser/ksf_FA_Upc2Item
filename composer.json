@@ -1,0 +1,29 @@
+{
+    "name": "ksfraser/ksf-fa-upc2item",
+    "description": "UPC2Item - Scan barcodes/UPCs, search Amazon/EBay/Facebook Marketplace, import into FrontAccounting Items/Inventory with pricebook mapping.",
+    "type": "fa-module",
+    "license": "GPL-3.0",
+    "require": {
+        "php": ">=7.3",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-dom": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "ksfraser\\FrontAccounting\\Upc2Item\\": "src/Ksfraser/FrontAccounting/Upc2Item/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml"
+    },
+    "minimum-stability": "stable"
+}
