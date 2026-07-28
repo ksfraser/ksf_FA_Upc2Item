@@ -21,7 +21,7 @@ class BarcodeScannerTest extends TestCase
     public function testScanNormalizes8DigitUpcToGtin13(): void
     {
         $result = $this->scanner->scan('12345678');
-        $this->assertSame('00012345678', $result);
+        $this->assertSame('0000012345678', $result);
     }
 
     public function testScanNormalizes12DigitUpcToGtin13(): void
@@ -39,7 +39,7 @@ class BarcodeScannerTest extends TestCase
     public function testScanStripsNonDigits(): void
     {
         $result = $this->scanner->scan('ABC-123-456-789-012');
-        $this->assertSame('000123456789012', $result);
+        $this->assertSame('0123456789012', $result);
     }
 
     public function testScanRejectsInvalidLength(): void
@@ -59,7 +59,7 @@ class BarcodeScannerTest extends TestCase
         $csv = "12345678\n123456789012\n12345678\n\ninvalid\n";
         $result = $this->scanner->scanBatch($csv);
         $this->assertCount(2, $result);
-        $this->assertSame('00012345678', $result[0]);
+        $this->assertSame('0000012345678', $result[0]);
         $this->assertSame('0123456789012', $result[1]);
     }
 

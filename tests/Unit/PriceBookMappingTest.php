@@ -38,7 +38,7 @@ class PriceBookMappingTest extends TestCase
 
     public function testSetMappingUpdatesMapping(): void
     {
-        $this->assertTrue($this->service->setMapping('Amazon', 2));
+        $this->service->setMapping('Amazon', '2');
         $map = $this->service->getMappings();
         $this->assertSame(2, $map['Amazon']);
     }

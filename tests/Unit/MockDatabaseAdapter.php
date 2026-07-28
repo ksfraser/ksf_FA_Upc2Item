@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace ksfraser\FrontAccounting\Upc2Item\Services;
+namespace Tests\Unit;
+
+use ksfraser\FrontAccounting\Upc2Item\Contracts\DatabaseAdapterInterface;
 
 /**
  * In-memory mock database adapter for unit testing.
@@ -15,6 +17,9 @@ class MockDatabaseAdapter implements DatabaseAdapterInterface
 
     /** @var int Auto-increment counter per table */
     private $autoIncrement = [];
+
+    /** @var array<string, int> Fetch pointer per table result */
+    private $fetchPtr = [];
 
     public function query(string $sql, string $errMsg = '')
     {
@@ -53,7 +58,7 @@ class MockDatabaseAdapter implements DatabaseAdapterInterface
                     foreach ($this->tables[$table] as &$row) {
                         if ($this->matchesWhere($row, $wherePart)) {
                             foreach (explode(',', $setPart) as $assign) {
-                                if (preg_match('/(\w+)\s*=\s*[\'"]?([^\'"]+)[\'"]?/', $assign, $am)) {
+                                if (preg_match('/(\w+)\s*=\s*[\'\"]?([^\'\"]+)[\'\"]?/', $assign, $am)) {
                                     $row[$am[1]] = $am[2];
                                 }
                             }
@@ -72,7 +77,13 @@ class MockDatabaseAdapter implements DatabaseAdapterInterface
             return array_shift($result);
         }
         if (is_string($result) && isset($this->tables[$result])) {
-            return array_shift($this->tables[$result]);
+            $idx = $this->fetchPtr[$result] ?? 0;
+            if ($idx >= count($this->tables[$result])) {
+                return [];
+            }
+            $row = $this->tables[$result][$idx];
+            $this->fetchPtr[$result] = $idx + 1;
+            return $row;
         }
         return [];
     }

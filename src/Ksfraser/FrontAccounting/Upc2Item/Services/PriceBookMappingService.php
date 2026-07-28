@@ -36,47 +36,43 @@ class PriceBookMappingService implements PriceBookMapperInterface
      */
     public function getMappings(): array
     {
-        if (!empty($this->cache)) {
-            return array_combine(
-                array_map(fn($m) => $m->getSourceName(), $this->cache),
-                array_map(fn($m) => $m->getFaSalesTypeId(), $this->cache)
-            );
-        }
-
-        $sql = "SELECT source_name, fa_sales_type_id, enabled FROM " . TB_PREF . "ksf_upc2item_pricebook_map";
-        $result = $this->db->query($sql, 'cannot query pricebook map');
-        if ($result !== false) {
-            while ($row = $this->db->fetch($result)) {
-                $this->cache[] = new PriceBookMapping(
-                    (int)$row['id'],
-                    $row['source_name'],
-                    (int)$row['fa_sales_type_id'],
-                    (bool)$row['enabled']
-                );
+        if (empty($this->cache)) {
+            $sql = "SELECT source_name, fa_sales_type_id, enabled FROM " . TB_PREF . "ksf_upc2item_pricebook_map";
+            $result = $this->db->query($sql, 'cannot query pricebook map');
+            if ($result !== false) {
+                while ($row = $this->db->fetch($result)) {
+                    $this->cache[] = new PriceBookMapping(
+                        (int)$row['id'],
+                        $row['source_name'],
+                        (int)$row['fa_sales_type_id'],
+                        (bool)$row['enabled']
+                    );
+                }
             }
         }
 
-        return $this->getMappings();
+        $map = [];
+        foreach ($this->cache as $m) {
+            $map[$m->getSourceName()] = (int)$m->getFaSalesTypeId();
+        }
+        return $map;
     }
 
     /**
-     * Update mapping for a source.
+     * Set mapping for a source.
      * 
-     * @param string $sourceName
-     * @param int $faSalesTypeId
-     * @return bool
+     * @param string $source
+     * @param string $salesTypeId
+     * @param bool $enabled
+     * @return void
      */
-    public function setMapping(string $sourceName, int $faSalesTypeId): bool
+    public function setMapping(string $source, string $salesTypeId, bool $enabled = true): void
     {
         $sql = "UPDATE " . TB_PREF . "ksf_upc2item_pricebook_map 
-                SET fa_sales_type_id=" . (int)$faSalesTypeId . " 
-                WHERE source_name='" . $this->db->escape($sourceName) . "'";
+                SET fa_sales_type_id=" . (int)$salesTypeId . ", enabled=" . ($enabled ? 1 : 0) . " 
+                WHERE source_name='" . $this->db->escape($source) . "'";
         $result = $this->db->query($sql, 'cannot update pricebook map');
-        if ($result !== false) {
-            $this->cache = [];
-            return true;
-        }
-        return false;
+        $this->cache = [];
     }
 
     /**
@@ -111,5 +107,13 @@ class PriceBookMappingService implements PriceBookMapperInterface
             }
         }
         return array_unique($ids);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefaultSalesTypeId(): string
+    {
+        return '1';
     }
 }

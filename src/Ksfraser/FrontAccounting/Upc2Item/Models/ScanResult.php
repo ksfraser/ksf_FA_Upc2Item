@@ -30,7 +30,20 @@ class ScanResult
     public function __construct(string $upc)
     {
         $this->upc = $upc;
+        $this->title = null;
+        $this->description = null;
+        $this->imageUrl = null;
+        $this->category = null;
+        $this->brand = null;
+        $this->model = null;
+        $this->amazonPrice = null;
+        $this->amazonRetail = null;
+        $this->ebayPrice = null;
+        $this->ebayRetail = null;
+        $this->facebookPrice = null;
+        $this->facebookRetail = null;
         $this->faImported = false;
+        $this->faStockId = null;
     }
 
     public function getUpc(): string { return $this->upc; }
@@ -93,12 +106,12 @@ class ScanResult
         $s->category = $row['category'] ?? null;
         $s->brand = $row['brand'] ?? null;
         $s->model = $row['model'] ?? null;
-        $s->amazonPrice = $row['amazon_price'] !== null ? (float)$row['amazon_price'] : null;
-        $s->amazonRetail = $row['amazon_retail'] !== null ? (float)$row['amazon_retail'] : null;
-        $s->ebayPrice = $row['ebay_price'] !== null ? (float)$row['ebay_price'] : null;
-        $s->ebayRetail = $row['ebay_retail'] !== null ? (float)$row['ebay_retail'] : null;
-        $s->facebookPrice = $row['facebook_price'] !== null ? (float)$row['facebook_price'] : null;
-        $s->facebookRetail = $row['facebook_retail'] !== null ? (float)$row['facebook_retail'] : null;
+        $s->amazonPrice = isset($row['amazon_price']) ? (float)$row['amazon_price'] : null;
+        $s->amazonRetail = isset($row['amazon_retail']) ? (float)$row['amazon_retail'] : null;
+        $s->ebayPrice = isset($row['ebay_price']) ? (float)$row['ebay_price'] : null;
+        $s->ebayRetail = isset($row['ebay_retail']) ? (float)$row['ebay_retail'] : null;
+        $s->facebookPrice = isset($row['facebook_price']) ? (float)$row['facebook_price'] : null;
+        $s->facebookRetail = isset($row['facebook_retail']) ? (float)$row['facebook_retail'] : null;
         $s->faImported = (bool)($row['fa_imported'] ?? 0);
         $s->faStockId = $row['fa_stock_id'] ?? null;
         return $s;

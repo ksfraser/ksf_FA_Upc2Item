@@ -49,8 +49,11 @@ class ConfigService implements ConfigServiceInterface
     private function load(): void
     {
         if (!file_exists($this->configPath)) {
+            if (!is_dir(dirname($this->configPath))) {
+                mkdir(dirname($this->configPath), 0777, true);
+            }
             $this->config = [
-                'default_sales_type_id' => 1,
+                'default_sales_type_id' => '1',
                 'amazon_enabled' => '1',
                 'ebay_enabled' => '1',
                 'facebook_enabled' => '1',
