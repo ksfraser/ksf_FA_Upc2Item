@@ -1,3 +1,12 @@
+Package: ksf_FA_Upc2Item
 Name: ksf_FA_Upc2Item
-Version: 2.4.3-0
 Description: KSF UPC2Item - Scan barcodes/UPCs, search internet marketplaces, import into FA Items/Inventory with pricebook mapping.
+Author: Kevin Fraser <kevin@ksfraser.com>
+Maintenance: Kevin Fraser <kevin@ksfraser.com>
+Homepage: http://ksfraser.com
+Type: extension
+InstallPath: modules/ksf_FA_Upc2Item
+Filename: ksf_FA_Upc2Item
+Version: 2.4.3-0
+FA-Version: 2.4
+PHP-Version: 7.3
