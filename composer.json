@@ -27,5 +27,10 @@
     "scripts": {
         "test": "phpunit --configuration phpunit.xml"
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "config": {
+        "platform": {
+            "php": "7.4.33"
+        }
+    }
 }
