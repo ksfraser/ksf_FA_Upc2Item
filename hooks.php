@@ -28,9 +28,15 @@ class hooks_ksf_FA_Upc2Item extends hooks
 
     /**
      * Register module menus under Inventory application
+     *
+     * add_module_app() is provided by the KSF app-framework FA build only. On
+     * stock FA 2.4.x the method does not exist and calling it during menu
+     * construction throws an uncaught exception that blanks every page
+     * (footer-only render), so the menu registration is guarded. The module
+     * pages remain reachable directly by URL either way.
      */
     function install_options($app) {
-        if ($app->id == 'orders') {
+        if ($app->id == 'orders' && method_exists($this, 'add_module_app')) {
             $this->add_module_app('upc2item', _("UPC2Item"), 'modules/ksf_FA_Upc2Item/pages/scan.php', SA_ksf_FA_Upc2ItemVIEW);
             $this->add_module_app('upc2item_config', _("UPC2Item Config"), 'modules/ksf_FA_Upc2Item/pages/config.php', SA_ksf_FA_Upc2ItemMANAGE);
         }
