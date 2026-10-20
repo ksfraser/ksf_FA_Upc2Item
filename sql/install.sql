@@ -61,4 +61,4 @@ VALUES ('Retail', 1, 1), ('Amazon', 1, 1), ('Ebay', 1, 1), ('Facebook', 1, 1)
 ON DUPLICATE KEY UPDATE `fa_sales_type_id` = VALUES(`fa_sales_type_id`);
 
 -- Module version
-INSERT INTO `fa_modules` (`name`, `version`, `enabled`, `installed`) VALUES ('UPC2Item', '2.4.3-0', 1, NOW()) ON DUPLICATE KEY UPDATE `version` = '2.4.3-0';
+INSERT INTO `0_ksf_modules` (`name`, `version`, `enabled`, `installed`) VALUES ('UPC2Item', '2.4.3-0', 1, NOW()) ON DUPLICATE KEY UPDATE `version` = '2.4.3-0';
