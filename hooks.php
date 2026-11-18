@@ -64,12 +64,75 @@ class hooks_ksf_FA_Upc2Item extends hooks
     function activate_extension($company, $check_only=true) {
         $this->ensure_composer_dependencies();
 
+        if (!$this->ksf_fa_common_available()) {
+            display_warning(_('UPC2Item requires the ksf-fa-common Composer package. Run composer install, then re-activate UPC2Item.'));
+            return false;
+        }
+
+        // Ensure the shared 0_ksf_modules table exists before inserting into it.
+        // ksf-FA-Common owns this table; its SQL ships in the vendor package.
+        if (!$check_only) {
+            $this->install_common_table('ksf_modules.sql');
+        }
+
         if (file_exists(dirname(__FILE__) . '/sql/install.sql')) {
             $updates = array('install.sql' => array($this->module_name));
             return $this->update_databases($company, $updates, $check_only);
         }
 
         return true;
+    }
+
+    /**
+     * Check that ksf-FA-Common Composer package is installed and autoloadable.
+     */
+    private function ksf_fa_common_available()
+    {
+        $autoload = dirname(__FILE__) . '/vendor/autoload.php';
+        if (!file_exists($autoload)) {
+            return false;
+        }
+        return class_exists('ksfraser\\FrontAccounting\\Common\\Utils\\SchemaInstaller', false);
+    }
+
+    /**
+     * Execute a shared table SQL file from the ksf-FA-Common vendor package.
+     * Each statement is run individually via db_query(); CREATE TABLE IF NOT EXISTS
+     * makes re-runs safe.
+     *
+     * @param string $tableFile e.g. 'ksf_modules.sql'
+     * @return bool
+     */
+    private function install_common_table(string $tableFile): bool
+    {
+        $vendorDir = dirname(__FILE__) . '/vendor/ksfraser/ksf-fa-common';
+        $sqlPath   = $vendorDir . '/sql/' . $tableFile;
+
+        if (!file_exists($sqlPath)) {
+            error_log('KSF Module: common table SQL not found: ' . $sqlPath);
+            return false;
+        }
+
+        $sql = file_get_contents($sqlPath);
+        if ($sql === false) {
+            return false;
+        }
+
+        $sql = preg_replace('/--[^\n]*/', '', $sql);
+        $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
+        $statements = array_map('trim', explode(';', $sql));
+
+        $ok = true;
+        foreach ($statements as $stmt) {
+            $stmt = trim($stmt);
+            if ($stmt === '') {
+                continue;
+            }
+            if (!db_query($stmt, 'Common table install failed: ' . substr($stmt, 0, 80))) {
+                $ok = false;
+            }
+        }
+        return $ok;
     }
 
     /**
